@@ -3,6 +3,25 @@ import axios from 'axios'
 interface ChatRequest {
   message: string
   conversationId?: string
+  chatHistory?: { role: string; content: string }[]
+}
+
+interface LambdaRequest {
+  question: string
+  session_id: string
+  chat_history: { role: string; content: string }[]
+}
+
+interface LambdaResponse {
+  status: string
+  answer: string
+  sql?: string | null
+  data?: unknown | null
+  tables_used?: string[] | null
+  route?: string
+  retry_count?: number
+  node?: string
+  pivot_metadata?: unknown | null
 }
 
 interface ChatResponse {
@@ -19,17 +38,20 @@ function getChatMode(): ChatMode {
 }
 
 /**
- * API 모드: Lambda Function URL / API Gateway 엔드포인트 직접 호출
+ * API 모드: Vite dev server 프록시를 통해 Lambda Function URL 호출
+ * POST /api/chat → vite.config.ts 프록시 → VITE_API_URL
+ * (브라우저 CORS 제한을 우회)
  */
 async function sendViaApi(data: ChatRequest): Promise<ChatResponse> {
-  const apiUrl = import.meta.env.VITE_API_URL
-  if (!apiUrl) {
-    throw new Error('VITE_API_URL이 설정되지 않았습니다. .env 파일을 확인하세요.')
+  const lambdaPayload: LambdaRequest = {
+    question: data.message,
+    session_id: data.conversationId || '',
+    chat_history: data.chatHistory || [],
   }
-  const response = await axios.post<ChatResponse>(apiUrl, data, {
+  const response = await axios.post<LambdaResponse>('/api/chat', lambdaPayload, {
     headers: { 'Content-Type': 'application/json' },
   })
-  return response.data
+  return { reply: response.data.answer }
 }
 
 /**
@@ -37,10 +59,15 @@ async function sendViaApi(data: ChatRequest): Promise<ChatResponse> {
  * POST /api/chat → vite.config.ts 미들웨어 → AWS SDK Lambda Invoke
  */
 async function sendViaArn(data: ChatRequest): Promise<ChatResponse> {
-  const response = await axios.post<ChatResponse>('/api/chat', data, {
+  const lambdaPayload: LambdaRequest = {
+    question: data.message,
+    session_id: data.conversationId || '',
+    chat_history: data.chatHistory || [],
+  }
+  const response = await axios.post<LambdaResponse>('/api/chat', lambdaPayload, {
     headers: { 'Content-Type': 'application/json' },
   })
-  return response.data
+  return { reply: response.data.answer }
 }
 
 /**
