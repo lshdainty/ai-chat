@@ -1,7 +1,7 @@
 /// <reference types="vite/client" />
 
 interface ImportMetaEnv {
-  /** 채팅 모드: '' (mock) | 'api' | 'arn' */
+  /** 채팅 모드: 'api' | 'arn' */
   readonly VITE_CHAT_MODE: string
   /** API 모드: Lambda Function URL 또는 API Gateway 엔드포인트 */
   readonly VITE_API_URL: string

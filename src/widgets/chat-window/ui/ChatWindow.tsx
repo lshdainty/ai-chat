@@ -168,8 +168,9 @@ export function ChatWindow({ messages, isLoading, onSendMessage }: ChatWindowPro
                       <Bot className="h-5 w-5" />
                     </AvatarFallback>
                   </Avatar>
-                  <div className="flex items-center gap-2 rounded-lg bg-secondary p-3">
-                    <Loader variant="typing" size="sm" />
+                  <div className="flex items-center gap-3 rounded-lg bg-secondary px-4 py-3">
+                    <Loader variant="dots" size="sm" />
+                    <Loader variant="text-shimmer" size="sm" text="생각하는 중" />
                   </div>
                 </MessageUI>
               )}
