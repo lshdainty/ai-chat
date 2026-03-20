@@ -6,13 +6,13 @@ node_modules/.cache/
 **/node_modules/.bin/
 node_modules/fsevents/
 
-# build
-dist/
+# build (루트 dist만 제외, node_modules 내 dist는 포함)
+/dist/
 
-# env
-.env
-.env.local
-.env.*.local
+# env (루트만)
+/.env
+/.env.local
+/.env.*.local
 
 # editor
 .vscode/
