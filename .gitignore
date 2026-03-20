@@ -1,5 +1,9 @@
-# dependencies
-node_modules/
+# dependencies (node_modules는 내부망 배포를 위해 포함)
+# node_modules 내 불필요한 캐시/임시 파일만 제외
+node_modules/.vite/
+node_modules/.vite-temp/
+node_modules/.cache/
+node_modules/fsevents/
 
 # build
 dist/
